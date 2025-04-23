@@ -58,10 +58,9 @@ if image_files:
 
         # スプレッドシートに接続
         worksheet = gc.open_by_key(SPREADSHEET_ID).sheet1
-        
 
-        for filename, rating in st.session_state.ratings.items():
-            worksheet.append_row([filename, rating])
+        rows=[[filename, rating] for filename, rating in st.session_state.ratings.items()]
+        worksheet.append_rows(rows)
 
         st.success("✨ すべての写真を評価しました！ありがとうございました！")
 

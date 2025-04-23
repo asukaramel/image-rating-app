@@ -23,11 +23,11 @@ st.title("📸 写真魅力度調査")
 
 # 名前の入力（最初に一度だけ）
 if st.session_state.submitted_name == "":
-    name = st.text_input("あなたのお名前を入力してください（ニックネーム可）:")
+    name = st.text_input("お名前を入力してください（ニックネーム可）:")
     if st.button("スタート"):
         if name.strip():
             st.session_state.submitted_name = name.strip()
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.warning("名前を入力してください。")
 else:

@@ -23,7 +23,7 @@ st.title("📸 写真魅力度調査")
 
 # 名前の入力（最初に一度だけ）
 if st.session_state.submitted_name == "":
-    name = st.text_input("お名前を入力してください（ニックネーム可）:")
+    name = st.text_input("名前を入力してください（ニックネーム可）:")
     if st.button("スタート"):
         if name.strip():
             st.session_state.submitted_name = name.strip()
@@ -36,7 +36,7 @@ else:
         st.progress(st.session_state.index / len(image_files))
 
         if st.session_state.index < len(image_files):
-            st.write(f"{st.session_state.submitted_name} さん、1〜5のボタンで魅力度を選択してください。")
+            st.write("1〜5のボタンで魅力度を選択してください。")
             fname = image_files[st.session_state.index]
             st.image(
                 os.path.join(IMAGE_FOLDER, fname),

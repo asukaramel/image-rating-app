@@ -61,7 +61,7 @@ if image_files:
         
 
         for filename, rating in st.session_state.ratings.items():
-            worksheet.append_row([timestamp, filename, rating])
+            worksheet.append_row([filename, rating])
 
         st.success("✨ すべての写真を評価しました！ありがとうございました！")
 

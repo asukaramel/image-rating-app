@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import gspread
 import datetime
+import pytz
 from oauth2client.service_account import ServiceAccountCredentials
 
 # 画像フォルダとファイル一覧取得
@@ -58,8 +59,10 @@ if image_files:
 
         # スプレッドシートに接続
         worksheet = gc.open_by_key(SPREADSHEET_ID).sheet1
-        
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # ローカルタイムを取得
+        local_timezone = pytz.timezone("Asia/Tokyo")  # 日本時間（Tokyo）のタイムゾーンを設定
+        local_time = datetime.datetime.now(local_timezone)
+        timestamp = local_time.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         for filename, rating in st.session_state.ratings.items():
             worksheet.append_row([timestamp, filename, rating])

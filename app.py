@@ -19,7 +19,6 @@ cookies = EncryptedCookieManager(
     prefix="photo-rating-app",
     password=st.secrets["cookie_password"]
 )
-cookies.load()
 
 # セッションステート初期化
 if "index" not in st.session_state:

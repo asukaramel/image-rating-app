@@ -7,6 +7,7 @@ import threading
 import time
 import json
 from streamlit_cookies_manager import EncryptedCookieManager
+from datetime import datetime, timezone, timedelta
 
 # 画像フォルダとファイル一覧取得
 IMAGE_FOLDER = "images"
@@ -124,7 +125,9 @@ if image_files:
         for rating_val, col in enumerate(cols, start=1):
             if col.button(str(rating_val)):
                 st.session_state.ratings[fname] = rating_val
-                row = [info['name'], info['age_group'], info['gender'], 20, fname, rating_val]
+                jst=timezone(timedelta(hours=9))
+                timestamp=datetime.now(jst).isoformat()
+                row = [timestamp,info['name'], info['age_group'], info['gender'], fname, rating_val]
                 threading.Thread(target=save_row_background, args=(row,)).start()
                 st.session_state.index += 1
                 st.rerun()

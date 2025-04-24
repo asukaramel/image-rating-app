@@ -129,7 +129,7 @@ if image_files:
             if col.button(str(rating_val)):
                 st.session_state.ratings[fname] = rating_val
                 jst=timezone(timedelta(hours=9))
-                timestamp=datetime.now(jst).isoformat()
+                timestamp=datetime.now(jst).strftime("%Y-%m-%d %H:%M:%S")
                 row = [timestamp,info['name'], info['age_group'], info['gender'], fname, rating_val]
                 threading.Thread(target=save_row_background, args=(row,)).start()
                 st.session_state.index += 1

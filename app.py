@@ -5,6 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from gspread.exceptions import APIError
 import threading
 import time
+import json
 from streamlit_cookies_manager import EncryptedCookieManager
 
 # 画像フォルダとファイル一覧取得
@@ -19,6 +20,7 @@ cookies = EncryptedCookieManager(
     prefix="photo-rating-app",
     password=st.secrets["cookie_password"]
 )
+cookies.load()
 
 # セッションステート初期化
 if "index" not in st.session_state:
@@ -74,7 +76,7 @@ if info is None:
     if st.button("スタート"):
         if name and age_group != "選択してください" and gender != "選択してください":
             info = {"name": name.strip(), "age_group": age_group, "gender": gender}
-            cookies["info"] = info
+            cookies["info"] = json.dumps(info)
             cookies.save()
             st.rerun()
         else:
@@ -83,7 +85,7 @@ if info is None:
 
 # 再開処理：Google Sheetsから読み込む
 if not st.session_state.resumed:
-    stored = cookies.get("info")
+    stored = json.loads(cookies.get("info"))
     rows = worksheet.get_all_values()
     for row in rows:
         if len(row) >= 6 and \
@@ -105,9 +107,10 @@ if not st.session_state.resumed:
     st.session_state.resumed = True
 
 # 評価UI表示
-info = cookies.get("info")
+info = json.loads(cookies.get("info"))
 
 if image_files:
+
     if st.session_state.index < len(image_files):
         st.markdown("> **※5が最も高評価です。**")
         fname = image_files[st.session_state.index]

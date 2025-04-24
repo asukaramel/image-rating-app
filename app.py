@@ -92,13 +92,13 @@ if not st.session_state.resumed:
     stored = json.loads(cookies.get("info"))
     rows = worksheet.get_all_values()
     for row in rows:
-        if len(row) >= 7 and \
+        if len(row) >= 6 and \
            row[1] == stored['name'] and \
            row[2] == stored['age_group'] and \
            row[3] == stored['gender']:
-            fname = row[5]
+            fname = row[4]
             try:
-                st.session_state.ratings[fname] = int(row[6])
+                st.session_state.ratings[fname] = int(row[5])
             except:
                 pass
     # 未評価の最初のインデックスをセット

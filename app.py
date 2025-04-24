@@ -7,29 +7,32 @@ import threading
 import time
 from streamlit_cookies_manager import EncryptedCookieManager
 
-# ─── Cookie Manager の初期化 ─────────────────────────
-cookies = EncryptedCookieManager(
-    prefix="photo-rating-app",
-)
-cookies.load()
-
 # 画像フォルダとファイル一覧取得
 IMAGE_FOLDER = "images"
-image_files = sorted([
+image_files = sorted(
     f for f in os.listdir(IMAGE_FOLDER)
     if f.lower().endswith((".jpg", ".jpeg", ".png"))
-])
+)
+
+# Cookie Manager セットアップ
+cookies = EncryptedCookieManager(
+    prefix="photo-rating-app",
+    password=st.secrets["cookie_password"]
+)
+cookies.load()
 
 # セッションステート初期化
 if "index" not in st.session_state:
     st.session_state.index = 0
 if "ratings" not in st.session_state:
     st.session_state.ratings = {}
+if "resumed" not in st.session_state:
+    st.session_state.resumed = False
 
-# Google Sheets 初期化（リソースキャッシュ）
+# Google Sheets 初期化（キャッシュ）
 @st.cache_resource
 def init_worksheet():
-    SPREADSHEET_ID = "1ISAKfWMjMQ7zUoZB7486pq9JSPU4yxpT_8AorqKQAl8"
+    SPREADSHEET_ID = st.secrets["SPREADSHEET_ID"]
     scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive"
@@ -42,7 +45,7 @@ def init_worksheet():
 
 worksheet = init_worksheet()
 
-# バックグラウンド書き込み（レート制限対応）
+# バックグラウンド書き込み関数（レート制限対応）
 def save_row_background(row, max_retries=5):
     retries = 0
     while retries < max_retries:
@@ -60,10 +63,10 @@ def save_row_background(row, max_retries=5):
 # タイトル
 st.title("📸 写真魅力度調査")
 
-# ─── ユーザー情報の取得 or 入力 ───────────────────────
+# ユーザー情報取得 or 入力
 info = cookies.get("info")
 if info is None:
-    st.write("まずは、以下の情報を入力してください。所要時間は約20分です。")
+    st.write("まずは以下の情報を入力してください（所要時間は約20分です）")
     name = st.text_input("お名前（ニックネーム可）")
     age_group = st.selectbox(
         "年代", ["選択してください", "10代", "20代", "30代", "40代", "50代", "60代以上"]
@@ -74,43 +77,40 @@ if info is None:
             info = {"name": name.strip(), "age_group": age_group, "gender": gender}
             cookies["info"] = info
             cookies.save()
-            st.erun()
+            st.rerun()
         else:
             st.warning("名前、年代、性別を正しく入力してください。")
     st.stop()
 
-# ─── 再開処理：Google Sheetsから既存評価を読み込み ─────────
-def initialize_resume():
+# 再開処理：Google Sheetsから読み込む
+if not st.session_state.resumed:
+    stored = cookies.get("info")
     rows = worksheet.get_all_values()
     for row in rows:
-        if len(row) >= 6 and row[0] == info['name'] and row[1] == info['age_group'] and row[2] == info['gender']:
+        if len(row) >= 6 and \
+           row[0] == stored['name'] and \
+           row[1] == stored['age_group'] and \
+           row[2] == stored['gender']:
             fname = row[4]
             try:
-                rating = int(row[5])
-                st.session_state.ratings[fname] = rating
+                st.session_state.ratings[fname] = int(row[5])
             except:
-                continue
-    # 未評価の最初のインデックスを求める
+                pass
+    # 未評価の最初のインデックスをセット
     for idx, fname in enumerate(image_files):
         if fname not in st.session_state.ratings:
             st.session_state.index = idx
             break
     else:
         st.session_state.index = len(image_files)
+    st.session_state.resumed = True
 
-if not cookies.get("resumed"):
-    initialize_resume()
-    cookies["resumed"] = True
-    cookies.save()
-
-# ─── 評価UI表示 ────────────────────────────────────
-
-
+# 評価UI表示
+info = cookies.get("info")
 
 if image_files:
-    
     if st.session_state.index < len(image_files):
-        st.markdown("> **※5がもっとも高評価です。**")
+        st.markdown("> **※5が最も高評価です。**")
         fname = image_files[st.session_state.index]
         st.image(
             os.path.join(IMAGE_FOLDER, fname),

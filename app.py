@@ -22,6 +22,9 @@ cookies = EncryptedCookieManager(
     password=st.secrets["cookie_password"]
 )
 
+if not cookies.ready():
+    st.stop()
+
 
 # セッションステート初期化
 if "index" not in st.session_state:
@@ -126,7 +129,7 @@ if image_files:
             if col.button(str(rating_val)):
                 st.session_state.ratings[fname] = rating_val
                 jst=timezone(timedelta(hours=9))
-                timestamp=datetime.now(jst).strftime("%Y-%m-%d %H:%M:%S")
+                timestamp=datetime.now(jst).isoformat()
                 row = [timestamp,info['name'], info['age_group'], info['gender'], fname, rating_val]
                 threading.Thread(target=save_row_background, args=(row,)).start()
                 st.session_state.index += 1

@@ -6,7 +6,6 @@ from gspread.exceptions import APIError
 import threading
 import time
 import json
-import uuid
 from streamlit_cookies_manager import EncryptedCookieManager
 from datetime import datetime, timezone, timedelta
 
@@ -26,11 +25,6 @@ cookies = EncryptedCookieManager(
 if not cookies.ready():
     st.stop()
 
-#ユーザーIDをcookiesに保持
-user_id=cookies.get("user_id")
-if user_id is None:
-    user_id=uuid.uuid4().hex
-    cookies.save()
 
 # セッションステート初期化
 if "index" not in st.session_state:

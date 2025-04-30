@@ -6,6 +6,7 @@ from gspread.exceptions import APIError
 import threading
 import time
 import json
+import uuid
 from streamlit_cookies_manager import EncryptedCookieManager
 from datetime import datetime, timezone, timedelta
 

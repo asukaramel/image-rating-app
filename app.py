@@ -8,13 +8,8 @@ import time
 import json
 from streamlit_cookies_manager import EncryptedCookieManager
 from datetime import datetime, timezone, timedelta
+import random
 
-# 画像フォルダとファイル一覧取得
-IMAGE_FOLDER = "images"
-image_files = sorted(
-    f for f in os.listdir(IMAGE_FOLDER)
-    if f.lower().endswith((".jpg", ".jpeg", ".png"))
-)
 
 # Cookie Manager セットアップ
 cookies = EncryptedCookieManager(
@@ -33,6 +28,16 @@ if "ratings" not in st.session_state:
     st.session_state.ratings = {}
 if "resumed" not in st.session_state:
     st.session_state.resumed = False
+if "set_number" not in st.session_state:
+    #1~3の乱数を生成してセットを割り当てる
+    st.session_state.set_number=random.randint(1,3)
+
+# 画像フォルダとファイル一覧取得
+IMAGE_FOLDER = f"images/set{st.session_state.set_number}"
+image_files = sorted(
+    f for f in os.listdir(IMAGE_FOLDER)
+    if f.lower().endswith((".jpg", ".jpeg", ".png"))
+)
 
 # Google Sheets 初期化（キャッシュ）
 @st.cache_resource
@@ -72,7 +77,7 @@ st.title("📸 写真魅力度調査")
 info = cookies.get("info")
 if info is None:
     st.write("まずは以下の情報を入力してください（所要時間は約20分です）")
-    name = st.text_input("お名前（ニックネーム可）")
+    name = st.text_input("お名前")
     age_group = st.selectbox(
         "年代", ["選択してください", "10代", "20代", "30代", "40代", "50代", "60代以上"]
     )
@@ -92,13 +97,14 @@ if not st.session_state.resumed:
     stored = json.loads(cookies.get("info"))
     rows = worksheet.get_all_values()
     for row in rows:
-        if len(row) >= 6 and \
+        if len(row) >= 7 and \
            row[1] == stored['name'] and \
            row[2] == stored['age_group'] and \
-           row[3] == stored['gender']:
-            fname = row[4]
+           row[3] == stored['gender'] and \
+           row[4] == f"set{st.session_state.set_number}":
+            fname = row[5]
             try:
-                st.session_state.ratings[fname] = int(row[5])
+                st.session_state.ratings[fname] = int(row[6])
             except:
                 pass
     # 未評価の最初のインデックスをセット
@@ -130,7 +136,7 @@ if image_files:
                 st.session_state.ratings[fname] = rating_val
                 jst=timezone(timedelta(hours=9))
                 timestamp=datetime.now(jst).strftime("%Y-%m-%d %H:%M:%S")
-                row = [timestamp,info['name'], info['age_group'], info['gender'], fname, rating_val]
+                row = [timestamp,info['name'], info['age_group'], info['gender'], f"set{st.session_state.set_number}", fname, rating_val]
                 threading.Thread(target=save_row_background, args=(row,)).start()
                 st.session_state.index += 1
                 st.rerun()

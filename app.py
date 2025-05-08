@@ -72,6 +72,17 @@ def save_row_background(row, max_retries=5):
 
 # タイトル
 st.title("📸 写真魅力度調査")
+# 角丸解除スタイル
+st.markdown(
+    """
+    <style>
+    img {
+        border-radius: 0 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # ユーザー情報取得 or 入力
 info = cookies.get("info")

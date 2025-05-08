@@ -34,10 +34,17 @@ if "set_number" not in st.session_state:
 
 # 画像フォルダとファイル一覧取得
 IMAGE_FOLDER = f"images/set{st.session_state.set_number}"
-image_files = sorted(
-    f for f in os.listdir(IMAGE_FOLDER)
-    if f.lower().endswith((".jpg", ".jpeg", ".png"))
-)
+
+if "shuffled_images" not in st.session_state:
+    image_files=[
+        f for f in os.listdir(IMAGE_FOLDER)
+        if f.lower().endswith((".jpg", ".jpeg", ".png"))
+    ]
+    random.shuffle(image_files)
+    st.session_state.shuffled_images=image_files
+else:
+    image_files = st.session_state.shuffled_images
+
 
 # Google Sheets 初期化（キャッシュ）
 @st.cache_resource

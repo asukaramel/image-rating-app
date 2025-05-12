@@ -94,7 +94,7 @@ st.markdown(
 # ユーザー情報取得 or 入力
 info = cookies.get("info")
 if info is None:
-    st.write("まずは以下の情報を入力してください（所要時間は約20分です）")
+    st.write("まずは以下の情報を入力してください（所要時間は約5分です）")
     name = st.text_input("お名前")
     age_group = st.selectbox(
         "年代", ["選択してください", "10代", "20代", "30代", "40代", "50代", "60代以上"]

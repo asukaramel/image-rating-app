@@ -140,7 +140,7 @@ info = json.loads(cookies.get("info"))
 if image_files:
 
     if st.session_state.index < len(image_files):
-        st.markdown("> **※5が最も高評価です。**")
+        st.markdown("> **※5が最も高評価です。画質も考慮して評価してください**")
         fname = image_files[st.session_state.index]
         st.image(
             os.path.join(IMAGE_FOLDER, fname),

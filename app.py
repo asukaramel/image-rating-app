@@ -140,7 +140,7 @@ info = json.loads(cookies.get("info"))
 if image_files:
 
     if st.session_state.index < len(image_files):
-        st.markdown("> **※5が最も高評価です。画質も考慮して評価してください。**")
+        st.markdown("> **※画質も考慮して評価してください。**")
         fname = image_files[st.session_state.index]
         st.image(
             os.path.join(IMAGE_FOLDER, fname),
@@ -149,11 +149,11 @@ if image_files:
         )
         st.progress(st.session_state.index / len(image_files))
         labels=[
-            "1|n全く魅力的でない",
-            "2|nあまり魅力的でない",
-            "3|nどちらともいえない",
-            "4|nやや魅力的",
-            "5|nとても魅力的"
+            "1全く魅力的でない",
+            "2あまり魅力的でない",
+            "3どちらともいえない",
+            "4やや魅力的",
+            "5とても魅力的"
         ]
         cols = st.columns(5)
         for i, col in enumerate(cols):

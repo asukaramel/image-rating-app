@@ -30,7 +30,7 @@ if "resumed" not in st.session_state:
     st.session_state.resumed = False
 if "set_number" not in st.session_state:
     #1~3の乱数を生成してセットを割り当てる
-    st.session_state.set_number=random.randint(4,6)
+    st.session_state.set_number=random.randint(5s,6)
 
 # 画像フォルダとファイル一覧取得
 IMAGE_FOLDER = f"images/set{st.session_state.set_number}"
